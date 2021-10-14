@@ -30,6 +30,6 @@ def get_geo_ip(geo_ip_request_model: GeoIpRequestModel) -> dict:
         return JSONResponse(content=data)
     except ValueError:
         return {
-            "status": False,
+            "status": "fail",
             "message": "IP address {} is not valid".format(geo_ip_request_model.query),
         }
