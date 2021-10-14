@@ -42,3 +42,10 @@ class GeoIpResponseModel(BaseModel):
                 "org": "Videotron Ltee",
             }
         }
+
+
+class IpAddressResponseModel(BaseModel):
+    ip_address: str
+
+    class Config:
+        schema_extra = {"example": {"ip_address": "1.1.1.1"}}

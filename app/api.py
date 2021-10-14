@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from fastapi import responses
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Optional
-from app.model import GeoIpRequestModel, GeoIpResponseModel
+from app.model import GeoIpRequestModel, GeoIpResponseModel, IpAddressResponseModel
 
 import ipaddress
 import requests
@@ -13,6 +14,30 @@ app = FastAPI()
 @app.get("/", tags=["Home"])
 def get_root() -> dict:
     return {"message": "Welcome to the h4ck1ng server."}
+
+
+@app.get(
+    "/network/ip-address",
+    tags=["Network"],
+    response_model=IpAddressResponseModel,
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "ip_address": "1.1.1.1",
+                    }
+                }
+            },
+        },
+    },
+)
+def get_ip_address() -> dict:
+    response = requests.get("https://api.ipify.org").content.decode("utf8")
+    ip = {"ip_address": response}
+    data = jsonable_encoder(ip)
+    return JSONResponse(content=data)
 
 
 @app.post(
@@ -56,10 +81,8 @@ def get_root() -> dict:
 )
 def get_geo_ip(geo_ip_request_model: GeoIpRequestModel) -> dict:
     try:
-        print(geo_ip_request_model.query)
         ip = ipaddress.ip_address(geo_ip_request_model.query)
         response = requests.get("http://ip-api.com/json/{}".format(ip))
-        print(response.json())
         data = jsonable_encoder(response.json())
         return JSONResponse(content=data)
     except ValueError:
