@@ -49,3 +49,18 @@ class IpAddressResponseModel(BaseModel):
 
     class Config:
         schema_extra = {"example": {"ip_address": "1.1.1.1"}}
+
+
+class PortForwardRequestModel(BaseModel):
+    ip_address: str
+    port: int
+
+    class Config:
+        schema_extra = {"example": {"ip_address": "1.1.1.1", "port": 80}}
+
+
+class PortForwardResponseModel(BaseModel):
+    message: str
+
+    class Config:
+        schema_extra = {"example": {"message": "Port 80 is closed on 1.1.1.1"}}
