@@ -5,4 +5,4 @@ ADD okteto-stack.yaml /okteto-stack.yaml
 RUN pip install -r requirements.txt
 EXPOSE 8080
 COPY ./app app
-CMD ["python", "main.py"]
+CMD ["python3", "main.py"]
