@@ -3,17 +3,24 @@ from fastapi import responses
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Optional
+
+from phonenumbers.phonenumberutil import NumberParseException
+
 from app.model import (
     GeoIpRequestModel,
     GeoIpResponseModel,
     IpAddressResponseModel,
     PortForwardRequestModel,
     PortForwardResponseModel,
+    TrackPhoneNumberLocationRequestModel,
+    TrackPhoneNumberLocationResponseModel,
 )
 
 import ipaddress
 import requests
 import socket
+import phonenumbers
+from phonenumbers import geocoder
 
 app = FastAPI()
 
@@ -21,6 +28,57 @@ app = FastAPI()
 @app.get("/", tags=["Home"])
 def get_root() -> dict:
     return {"message": "Welcome to the h4ck1ng server."}
+
+
+@app.post(
+    "/hacking/track_phone_number_location",
+    tags=["Hacking"],
+    response_model=TrackPhoneNumberLocationResponseModel,
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "location": "Ho Chi Minh City",
+                    }
+                }
+            },
+        },
+        422: {
+            "description": "Validation Error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "phone_number": "+842873005588",
+                        "country_code": "en",
+                    }
+                }
+            },
+        },
+    },
+)
+def post_track_phone_number_location(
+    track_phone_number_location_request_model: TrackPhoneNumberLocationRequestModel,
+) -> dict:
+    try:
+        ch_number = phonenumbers.parse(
+            track_phone_number_location_request_model.phone_number, "CH"
+        )
+        location = {
+            "location": geocoder.description_for_number(
+                ch_number, track_phone_number_location_request_model.country_code
+            )
+        }
+        data = jsonable_encoder(location)
+        return JSONResponse(content=data)
+    except NumberParseException:
+        raise HTTPException(
+            status_code=422,
+            detail="Phone number {} is not valid".format(
+                track_phone_number_location_request_model.phone_number
+            ),
+        )
 
 
 @app.get(

@@ -64,3 +64,23 @@ class PortForwardResponseModel(BaseModel):
 
     class Config:
         schema_extra = {"example": {"message": "Port 80 is closed on 1.1.1.1"}}
+
+
+class TrackPhoneNumberLocationRequestModel(BaseModel):
+    phone_number: str
+    country_code: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "phone_number": "+842873005588",
+                "country_code": "en",
+            }
+        }
+
+
+class TrackPhoneNumberLocationResponseModel(BaseModel):
+    location: str
+
+    class Config:
+        schema_extra = {"example": {"location": "Ho Chi Minh City"}}
