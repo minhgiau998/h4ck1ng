@@ -26,7 +26,87 @@ import validators
 import time
 
 
-app = FastAPI()
+tags_metadata = [
+    {
+        "name": "Hacking",
+        "description": "You can enjoy your hacking in here.",
+    },
+    {
+        "name": "Security",
+        "description": "You can use these tools to scan your website for security.",
+    },
+    {
+        "name": "Network",
+        "description": "You can use these tools to scan your network.",
+    },
+    {
+        "name": "Other",
+        "description": "You can do other things in here like getting your password.",
+    },
+]
+
+
+description = """
+Welcome to H4ck1ng server 💻
+
+You can access this server for free to do some pentest for your website or just have a fun hacking.
+
+> Disclaim: I do not take any responsibility for illegal hacking activities. I created this API for security learning and research purposes only.
+
+## Home
+
+You can use this function to test this server if it works or not.
+
+## Hacking
+
+You will be able to:
+
+* **Track phone number location**.
+* **Find email** (_not implemented_).
+
+## Security
+
+You will be able to:
+
+* **Scan Web Vulnerability**.
+* **Scan SSL/TLS** (_not implemented_).
+* **Scan Wappalyzer** (_not implemented_).
+* **Scan NMAP** (_not implemented_).
+
+## Network
+
+You will be able to:
+
+* **Get your IP address**.
+* **Get your location**.
+* **Scan port forware**.
+
+## Other
+
+You will be able to:
+
+* **Generator your password** (_not implemented_).
+* **Generator your email** (_not implemented_).
+* **Generator your information (_not implemented_).
+"""
+
+
+app = FastAPI(
+    title="H4ck1ng",
+    description=description,
+    version="0.0.1",
+    terms_of_service="http://example.com/terms/",
+    contact={
+        "name": "Rich Nguyen",
+        "url": "https://github.com/minhgiau998",
+        "email": "minhgiau04041998@gmail.com",
+    },
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+    openapi_tags=tags_metadata,
+)
 
 
 @app.get("/", tags=["Home"])
