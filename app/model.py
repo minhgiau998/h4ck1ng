@@ -84,3 +84,10 @@ class TrackPhoneNumberLocationResponseModel(BaseModel):
 
     class Config:
         schema_extra = {"example": {"location": "Ho Chi Minh City"}}
+
+
+class WebVulnerabilityScannerRequestModel(BaseModel):
+    url: str
+
+    class Config:
+        schema_extra = {"example": {"url": "https://www.example.com/products.php?id=1"}}

@@ -3,3 +3,4 @@ uvicorn
 black
 requests
 phonenumbers
+validators
