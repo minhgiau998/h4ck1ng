@@ -94,7 +94,24 @@ def post_track_phone_number_location(
             "content": {
                 "application/json": {
                     "example": {
-                        "location": "Ho Chi Minh City",
+                        "xst": {
+                            "message": "This site seems vulnerable to Cross Site Tracing (XST)!"
+                        },
+                        "lfi": {
+                            "message": "This site seems not vulnerable to Local File Inclusion (LFI)!"
+                        },
+                        "sql_time_based": {
+                            "message": "This site seems not vulnerable to Blind SQL injection time based!"
+                        },
+                        "sql_error_based": {
+                            "message": "This site seems vulnerable to Blind SQL injection error based!",
+                            "payload": "'",
+                            "poc": "http://demo.testfire.net/='",
+                        },
+                        "xss": {
+                            "message": "This site seems not vulnerable to Cross Site Scripting (XSS)!"
+                        },
+                        "waf": {"message": "No WAF detected!"},
                     }
                 }
             },
@@ -103,9 +120,7 @@ def post_track_phone_number_location(
             "description": "Not Found",
             "content": {
                 "application/json": {
-                    "example": {
-                        "detail": "URL https:// is not found",
-                    }
+                    "example": {"url": "https://www.example.com/products.php?id=1"}
                 }
             },
         },
@@ -113,9 +128,7 @@ def post_track_phone_number_location(
             "description": "Validation Error",
             "content": {
                 "application/json": {
-                    "example": {
-                        "detail": "URL https:// is not found",
-                    }
+                    "example": {"url": "https://www.example.com/products.php?id=1"}
                 }
             },
         },
