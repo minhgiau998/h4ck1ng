@@ -51,7 +51,7 @@ Welcome to H4ck1ng server 💻
 
 You can access this server for free to do some pentest for your website or just have a fun hacking.
 
-> Disclaim: I do not take any responsibility for illegal hacking activities. I created this API for security learning and research purposes only.
+_**Disclaim**: I do not take any responsibility for illegal hacking activities. I created this API for security learning and research purposes only._
 
 ## Home
 
@@ -87,7 +87,7 @@ You will be able to:
 
 * **Generator your password** (_not implemented_).
 * **Generator your email** (_not implemented_).
-* **Generator your information (_not implemented_).
+* **Generator your information** (_not implemented_).
 """
 
 
