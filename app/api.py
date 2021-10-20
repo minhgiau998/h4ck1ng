@@ -1,11 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi import responses
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from typing import Optional
-
-from phonenumbers.phonenumberutil import NumberParseException
-
 from app.model import (
     EmailFinderSchema,
     EmailGeneratorSchema,
@@ -15,7 +9,10 @@ from app.model import (
     TrackPhoneNumberLocationSchema,
     WebVulnerabilityScannerSchema,
 )
-
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from typing import Optional
+from phonenumbers.phonenumberutil import NumberParseException
 import ipaddress
 import requests
 import socket
@@ -88,8 +85,8 @@ You will be able to:
 
 You will be able to:
 
-* **Generator your password** (_not implemented_).
-* **Generator your email** (_not implemented_).
+* **Generator your password**.
+* **Generator your email**.
 * **Generator your information** (_not implemented_).
 """
 
