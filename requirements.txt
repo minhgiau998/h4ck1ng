@@ -5,3 +5,5 @@ requests
 phonenumbers
 validators
 python-dotenv
+random-word
+pyyaml

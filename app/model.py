@@ -59,3 +59,11 @@ class PasswordGeneratorSchema(BaseModel):
                 "special_characters_count": 5,
             }
         }
+
+
+class EmailGeneratorSchema(BaseModel):
+    domain: str
+    words_count: int
+
+    class Config:
+        schema_extra = {"example": {"domain": "gmail", "words_count": 3}}

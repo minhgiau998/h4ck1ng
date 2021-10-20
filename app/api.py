@@ -8,6 +8,7 @@ from phonenumbers.phonenumberutil import NumberParseException
 
 from app.model import (
     EmailFinderSchema,
+    EmailGeneratorSchema,
     GeoIpSchema,
     PasswordGeneratorSchema,
     PortForwardSchema,
@@ -26,6 +27,7 @@ from dotenv import load_dotenv
 import os
 import string
 import random
+from random_word import RandomWords
 
 
 load_dotenv()  # take environment variables from .env.
@@ -550,9 +552,7 @@ def post_web_vulnerability_scanner(
     else:
         raise HTTPException(
             status_code=422,
-            detail="URL {} is not valid".format(
-                web_vulnerability_scanner_schema.url
-            ),
+            detail="URL {} is not valid".format(web_vulnerability_scanner_schema.url),
         )
 
 
@@ -685,9 +685,7 @@ def post_port_forward(port_forward_schema: PortForwardSchema) -> dict:
     except socket.gaierror:
         raise HTTPException(
             status_code=422,
-            detail="IP address {} is not valid".format(
-                port_forward_schema.ip_address
-            ),
+            detail="IP address {} is not valid".format(port_forward_schema.ip_address),
         )
 
 
@@ -744,10 +742,38 @@ def post_password_generator(
         password.append(random.choice(special_characters))
     if characters_count < password_generator_schema.password_length:
         random.shuffle(characters)
-        for i in range(
-            password_generator_schema.password_length - characters_count
-        ):
+        for i in range(password_generator_schema.password_length - characters_count):
             password.append(random.choice(characters))
     random.shuffle(password)
     data = {"password": "".join(password)}
+    return JSONResponse(content=data)
+
+
+@app.post(
+    "/other/email-generator",
+    tags=["Other"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {"example": {"email": "unroped-sheesh-reule@gmail"}}
+            },
+        },
+        422: {
+            "description": "Validation Error",
+            "content": {
+                "application/json": {
+                    "example": {"domain": "gmail", "characters_count": 12}
+                }
+            },
+        },
+    },
+)
+def post_email_generator(email_generator_schema: EmailGeneratorSchema) -> dict:
+    domain = email_generator_schema.domain
+    r = RandomWords()
+    all_words = r.get_random_words(limit=3)
+    sentences = "-".join(all_words)
+    email = sentences + "@" + domain
+    data = {"email": email.lower()}
     return JSONResponse(content=data)
