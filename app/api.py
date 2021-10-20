@@ -11,6 +11,7 @@ from app.model import (
     GeoIpRequestModel,
     GeoIpResponseModel,
     IpAddressResponseModel,
+    PasswordGeneratorRequestModel,
     PortForwardRequestModel,
     PortForwardResponseModel,
     TrackPhoneNumberLocationRequestModel,
@@ -27,6 +28,8 @@ import validators
 import time
 from dotenv import load_dotenv
 import os
+import string
+import random
 
 
 load_dotenv()  # take environment variables from .env.
@@ -694,3 +697,65 @@ def post_port_forward(port_forward_request_model: PortForwardRequestModel) -> di
                 port_forward_request_model.ip_address
             ),
         )
+
+
+@app.post(
+    "/other/password-generator",
+    tags=["Other"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "password": ")9%rw$78^weHS29QI)WJ",
+                    }
+                }
+            },
+        },
+        422: {
+            "description": "Validation Error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "password_length": 20,
+                        "alphabets_count": 10,
+                        "digits_count": 5,
+                        "special_characters_count": 5,
+                    }
+                }
+            },
+        },
+    },
+)
+def post_password_generator(
+    password_generator_request_model: PasswordGeneratorRequestModel,
+):
+    alphabets = list(string.ascii_letters)
+    digits = list(string.digits)
+    special_characters = list("!@#$%^&*()")
+    characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+    characters_count = (
+        password_generator_request_model.alphabets_count
+        + password_generator_request_model.digits_count
+        + password_generator_request_model.special_characters_count
+    )
+    if characters_count > password_generator_request_model.password_length:
+        print("Characters total count is greater than the password length")
+        return False
+    password = []
+    for i in range(password_generator_request_model.alphabets_count):
+        password.append(random.choice(alphabets))
+    for i in range(password_generator_request_model.digits_count):
+        password.append(random.choice(digits))
+    for i in range(password_generator_request_model.special_characters_count):
+        password.append(random.choice(special_characters))
+    if characters_count < password_generator_request_model.password_length:
+        random.shuffle(characters)
+        for i in range(
+            password_generator_request_model.password_length - characters_count
+        ):
+            password.append(random.choice(characters))
+    random.shuffle(password)
+    data = {"password": "".join(password)}
+    return JSONResponse(content=data)

@@ -98,3 +98,20 @@ class EmailFinderRequestModel(BaseModel):
 
     class Config:
         schema_extra = {"example": {"email": "dunt3@fpt.com.vn"}}
+
+
+class PasswordGeneratorRequestModel(BaseModel):
+    password_length: int
+    alphabets_count: int
+    digits_count: int
+    special_characters_count: int
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "password_length": 20,
+                "alphabets_count": 10,
+                "digits_count": 5,
+                "special_characters_count": 5,
+            }
+        }
