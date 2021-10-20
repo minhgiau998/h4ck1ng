@@ -91,3 +91,10 @@ class WebVulnerabilityScannerRequestModel(BaseModel):
 
     class Config:
         schema_extra = {"example": {"url": "https://www.example.com/products.php?id=1"}}
+
+
+class EmailFinderRequestModel(BaseModel):
+    email: str
+
+    class Config:
+        schema_extra = {"example": {"email": "dunt3@fpt.com.vn"}}

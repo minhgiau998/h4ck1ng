@@ -7,6 +7,7 @@ from typing import Optional
 from phonenumbers.phonenumberutil import NumberParseException
 
 from app.model import (
+    EmailFinderRequestModel,
     GeoIpRequestModel,
     GeoIpResponseModel,
     IpAddressResponseModel,
@@ -62,7 +63,7 @@ You can use this function to test this server if it works or not.
 You will be able to:
 
 * **Track phone number location**.
-* **Find email** (_not implemented_).
+* **Find email**.
 
 ## Security
 
@@ -163,6 +164,90 @@ def post_track_phone_number_location(
                 track_phone_number_location_request_model.phone_number
             ),
         )
+
+
+@app.post(
+    "/hacking/email-finder",
+    tags=["Hacking"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": {
+                            "status": "valid",
+                            "result": "deliverable",
+                            "_deprecation_notice": "Using result is deprecated, use status instead",
+                            "score": 100,
+                            "email": "lynn@fpt.com.vn",
+                            "regexp": True,
+                            "gibberish": False,
+                            "disposable": False,
+                            "webmail": False,
+                            "mx_records": True,
+                            "smtp_server": True,
+                            "smtp_check": True,
+                            "accept_all": False,
+                            "block": False,
+                            "sources": [
+                                {
+                                    "domain": "giaiphapbenhvien.com",
+                                    "uri": "http://giaiphapbenhvien.com/tu-dien-dong-duoc/233-benh-vien/hung-yen/399-trung-tam-y-te-van-giang.html",
+                                    "extracted_on": "2020-11-15",
+                                    "last_seen_on": "2021-05-15",
+                                    "still_on_page": False,
+                                },
+                                {
+                                    "domain": "giaiphapbenhvien.com",
+                                    "uri": "http://giaiphapbenhvien.com/233-benh-vien/hung-yen/399-trung-tam-y-te-van-giang.html",
+                                    "extracted_on": "2020-10-31",
+                                    "last_seen_on": "2021-05-01",
+                                    "still_on_page": False,
+                                },
+                                {
+                                    "domain": "giaiphapbenhvien.com",
+                                    "uri": "http://giaiphapbenhvien.com/y-duoc/233-benh-vien/hung-yen/399-trung-tam-y-te-van-giang.html",
+                                    "extracted_on": "2019-06-17",
+                                    "last_seen_on": "2021-04-18",
+                                    "still_on_page": False,
+                                },
+                                {
+                                    "domain": "giaiphapbenhvien.com",
+                                    "uri": "http://giaiphapbenhvien.com/tra-cuu-thuoc-tay/233-benh-vien/hung-yen/399-trung-tam-y-te-van-giang.html",
+                                    "extracted_on": "2019-06-04",
+                                    "last_seen_on": "2021-04-14",
+                                    "still_on_page": False,
+                                },
+                                {
+                                    "domain": "giaiphapbenhvien.com",
+                                    "uri": "http://giaiphapbenhvien.com/danh-ba-benh-vien/233-benh-vien/hung-yen/399-trung-tam-y-te-van-giang.html",
+                                    "extracted_on": "2019-04-08",
+                                    "last_seen_on": "2021-04-17",
+                                    "still_on_page": False,
+                                },
+                            ],
+                        },
+                        "meta": {"params": {"email": "lynn@fpt.com.vn"}},
+                    }
+                }
+            },
+        },
+        422: {
+            "description": "Validation Error",
+            "content": {"application/json": {"example": {"email": "dunt3@fpt.com.vn"}}},
+        },
+    },
+)
+def post_email_finder(email_finder_request_model: EmailFinderRequestModel) -> dict:
+    email = email_finder_request_model.email
+    api_key = "c5cc676034b0dd5a9f5754d902feae861880f207"
+    url = "https://api.hunter.io/v2/email-verifier?email={}&api_key={}".format(
+        email, api_key
+    )
+    response = requests.get(url)
+    data = jsonable_encoder(response.json())
+    return JSONResponse(content=data)
 
 
 @app.post(
