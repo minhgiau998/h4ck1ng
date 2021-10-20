@@ -7,16 +7,12 @@ from typing import Optional
 from phonenumbers.phonenumberutil import NumberParseException
 
 from app.model import (
-    EmailFinderRequestModel,
-    GeoIpRequestModel,
-    GeoIpResponseModel,
-    IpAddressResponseModel,
-    PasswordGeneratorRequestModel,
-    PortForwardRequestModel,
-    PortForwardResponseModel,
-    TrackPhoneNumberLocationRequestModel,
-    TrackPhoneNumberLocationResponseModel,
-    WebVulnerabilityScannerRequestModel,
+    EmailFinderSchema,
+    GeoIpSchema,
+    PasswordGeneratorSchema,
+    PortForwardSchema,
+    TrackPhoneNumberLocationSchema,
+    WebVulnerabilityScannerSchema,
 )
 
 import ipaddress
@@ -122,7 +118,6 @@ def get_root() -> dict:
 @app.post(
     "/hacking/track_phone_number_location",
     tags=["Hacking"],
-    response_model=TrackPhoneNumberLocationResponseModel,
     responses={
         200: {
             "description": "Successful Response",
@@ -148,15 +143,15 @@ def get_root() -> dict:
     },
 )
 def post_track_phone_number_location(
-    track_phone_number_location_request_model: TrackPhoneNumberLocationRequestModel,
+    track_phone_number_location_schema: TrackPhoneNumberLocationSchema,
 ) -> dict:
     try:
         ch_number = phonenumbers.parse(
-            track_phone_number_location_request_model.phone_number, "CH"
+            track_phone_number_location_schema.phone_number, "CH"
         )
         location = {
             "location": geocoder.description_for_number(
-                ch_number, track_phone_number_location_request_model.country_code
+                ch_number, track_phone_number_location_schema.country_code
             )
         }
         data = jsonable_encoder(location)
@@ -165,7 +160,7 @@ def post_track_phone_number_location(
         raise HTTPException(
             status_code=422,
             detail="Phone number {} is not valid".format(
-                track_phone_number_location_request_model.phone_number
+                track_phone_number_location_schema.phone_number
             ),
         )
 
@@ -243,8 +238,8 @@ def post_track_phone_number_location(
         },
     },
 )
-def post_email_finder(email_finder_request_model: EmailFinderRequestModel) -> dict:
-    email = email_finder_request_model.email
+def post_email_finder(email_finder_schema: EmailFinderSchema) -> dict:
+    email = email_finder_schema.email
     api_key = os.environ.get("HUNTER_API_KEY")
     url = "https://api.hunter.io/v2/email-verifier?email={}&api_key={}".format(
         email, api_key
@@ -304,9 +299,9 @@ def post_email_finder(email_finder_request_model: EmailFinderRequestModel) -> di
     },
 )
 def post_web_vulnerability_scanner(
-    web_vulnerability_scanner_request_model: WebVulnerabilityScannerRequestModel,
+    web_vulnerability_scanner_schema: WebVulnerabilityScannerSchema,
 ) -> dict:
-    url = web_vulnerability_scanner_request_model.url
+    url = web_vulnerability_scanner_schema.url
     if validators.url(url):
         # Check website is alive
         response = requests.head(url, timeout=5)
@@ -548,7 +543,7 @@ def post_web_vulnerability_scanner(
             raise HTTPException(
                 status_code=404,
                 detail="URL {} is not found".format(
-                    web_vulnerability_scanner_request_model.url
+                    web_vulnerability_scanner_schema.url
                 ),
             )
 
@@ -556,7 +551,7 @@ def post_web_vulnerability_scanner(
         raise HTTPException(
             status_code=422,
             detail="URL {} is not valid".format(
-                web_vulnerability_scanner_request_model.url
+                web_vulnerability_scanner_schema.url
             ),
         )
 
@@ -564,7 +559,6 @@ def post_web_vulnerability_scanner(
 @app.get(
     "/network/ip-address",
     tags=["Network"],
-    response_model=IpAddressResponseModel,
     responses={
         200: {
             "description": "Successful Response",
@@ -588,7 +582,6 @@ def get_ip_address() -> dict:
 @app.post(
     "/network/geo-ip",
     tags=["Network"],
-    response_model=GeoIpResponseModel,
     responses={
         200: {
             "description": "Successful Response",
@@ -624,23 +617,22 @@ def get_ip_address() -> dict:
         },
     },
 )
-def post_geo_ip(geo_ip_request_model: GeoIpRequestModel) -> dict:
+def post_geo_ip(geo_ip_schema: GeoIpSchema) -> dict:
     try:
-        ip = ipaddress.ip_address(geo_ip_request_model.query)
+        ip = ipaddress.ip_address(geo_ip_schema.query)
         response = requests.get("http://ip-api.com/json/{}".format(ip))
         data = jsonable_encoder(response.json())
         return JSONResponse(content=data)
     except ValueError:
         raise HTTPException(
             status_code=422,
-            detail="IP address {} is not valid".format(geo_ip_request_model.query),
+            detail="IP address {} is not valid".format(geo_ip_schema.query),
         )
 
 
 @app.post(
     "/network/port-forward",
     tags=["Network"],
-    response_model=PortForwardResponseModel,
     responses={
         200: {
             "description": "Successful Response",
@@ -665,12 +657,12 @@ def post_geo_ip(geo_ip_request_model: GeoIpRequestModel) -> dict:
         },
     },
 )
-def post_port_forward(port_forward_request_model: PortForwardRequestModel) -> dict:
+def post_port_forward(port_forward_schema: PortForwardSchema) -> dict:
     try:
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         location = (
-            port_forward_request_model.ip_address,
-            port_forward_request_model.port,
+            port_forward_schema.ip_address,
+            port_forward_schema.port,
         )
         result_of_check = a_socket.connect_ex(location)
         if result_of_check == 0:
@@ -679,22 +671,22 @@ def post_port_forward(port_forward_request_model: PortForwardRequestModel) -> di
             status = "closed"
         data = {
             "message": "Port {} is {} on {}".format(
-                port_forward_request_model.port,
+                port_forward_schema.port,
                 status,
-                port_forward_request_model.ip_address,
+                port_forward_schema.ip_address,
             )
         }
         return JSONResponse(content=data)
     except OverflowError:
         raise HTTPException(
             status_code=422,
-            detail="Port {} is not valid".format(port_forward_request_model.port),
+            detail="Port {} is not valid".format(port_forward_schema.port),
         )
     except socket.gaierror:
         raise HTTPException(
             status_code=422,
             detail="IP address {} is not valid".format(
-                port_forward_request_model.ip_address
+                port_forward_schema.ip_address
             ),
         )
 
@@ -729,31 +721,31 @@ def post_port_forward(port_forward_request_model: PortForwardRequestModel) -> di
     },
 )
 def post_password_generator(
-    password_generator_request_model: PasswordGeneratorRequestModel,
+    password_generator_schema: PasswordGeneratorSchema,
 ):
     alphabets = list(string.ascii_letters)
     digits = list(string.digits)
     special_characters = list("!@#$%^&*()")
     characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
     characters_count = (
-        password_generator_request_model.alphabets_count
-        + password_generator_request_model.digits_count
-        + password_generator_request_model.special_characters_count
+        password_generator_schema.alphabets_count
+        + password_generator_schema.digits_count
+        + password_generator_schema.special_characters_count
     )
-    if characters_count > password_generator_request_model.password_length:
+    if characters_count > password_generator_schema.password_length:
         print("Characters total count is greater than the password length")
         return False
     password = []
-    for i in range(password_generator_request_model.alphabets_count):
+    for i in range(password_generator_schema.alphabets_count):
         password.append(random.choice(alphabets))
-    for i in range(password_generator_request_model.digits_count):
+    for i in range(password_generator_schema.digits_count):
         password.append(random.choice(digits))
-    for i in range(password_generator_request_model.special_characters_count):
+    for i in range(password_generator_schema.special_characters_count):
         password.append(random.choice(special_characters))
-    if characters_count < password_generator_request_model.password_length:
+    if characters_count < password_generator_schema.password_length:
         random.shuffle(characters)
         for i in range(
-            password_generator_request_model.password_length - characters_count
+            password_generator_schema.password_length - characters_count
         ):
             password.append(random.choice(characters))
     random.shuffle(password)
