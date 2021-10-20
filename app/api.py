@@ -59,10 +59,6 @@ You can access this server for free to do some pentest for your website or just 
 
 _**Disclaim**: I do not take any responsibility for illegal hacking activities. I created this API for security learning and research purposes only._
 
-## Home
-
-You can use this function to test this server if it works or not.
-
 ## Hacking
 
 You will be able to:
@@ -115,7 +111,7 @@ app = FastAPI(
 )
 
 
-@app.get("/", tags=["Home"])
+@app.get("/", include_in_schema=False)
 def get_root() -> dict:
     return {"message": "Welcome to the h4ck1ng server."}
 
