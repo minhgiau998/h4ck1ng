@@ -25,6 +25,11 @@ import phonenumbers
 from phonenumbers import geocoder
 import validators
 import time
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()  # take environment variables from .env.
 
 
 tags_metadata = [
@@ -241,7 +246,7 @@ def post_track_phone_number_location(
 )
 def post_email_finder(email_finder_request_model: EmailFinderRequestModel) -> dict:
     email = email_finder_request_model.email
-    api_key = "c5cc676034b0dd5a9f5754d902feae861880f207"
+    api_key = os.environ.get("HUNTER_API_KEY")
     url = "https://api.hunter.io/v2/email-verifier?email={}&api_key={}".format(
         email, api_key
     )
